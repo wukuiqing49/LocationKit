@@ -121,8 +121,6 @@ dependencies {
     implementation project(':lib_base')
     implementation project(':lib_location')
     implementation project(':lib_address')
-//    implementation 'com.github.wukuiqing49:location:v1.0.9'
-//    implementation 'com.github.wukuiqing49:LocationDemo:v1.0.9'
+//    implementation 'com.github.wukuiqing49:LocationKit:v1.0.1'
 
-    // implementation project(path:':LibAAR:AAR_Address')
 }

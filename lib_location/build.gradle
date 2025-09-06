@@ -47,7 +47,7 @@ afterEvaluate {
                 from components.release
                 groupId = "com.github.wukuiqing49"
                 artifactId = "location" // 模块名
-                version = "v1.1.0"
+                version = "v1.0.1"
 
                 println("Gradle implementation: implementation '${groupId}:${artifactId}:${version}'")
             }
