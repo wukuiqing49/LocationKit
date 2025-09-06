@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 配置分组 -->
+        <TextView
+            android:id="@+id/tvConfigTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="定位参数配置"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:paddingBottom="8dp"/>
+
+        <!-- 定位模式 -->
+        <TextView
+            android:id="@+id/tvMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="定位模式"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:paddingTop="4dp"/>
+        <Spinner
+            android:id="@+id/spMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- 时间/距离 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:paddingTop="4dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingEnd="8dp">
+                <TextView
+                    android:id="@+id/tvMinTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="最小时间(ms)"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etMinTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="1000"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="8dp">
+                <TextView
+                    android:id="@+id/tvMinDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="最小距离(m)"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etMinDistance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:text="1"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 过滤 -->
+        <TextView
+            android:id="@+id/tvFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="启用微抖动/大跳变过滤"
+            android:textSize="16sp"
+            android:paddingTop="4dp"/>
+        <Switch
+            android:id="@+id/switchFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:paddingTop="4dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingEnd="8dp">
+                <TextView
+                    android:id="@+id/tvFilterMin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="最小阈值(m)"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etFilterMin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:text="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="8dp">
+                <TextView
+                    android:id="@+id/tvFilterMax"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="最大跳变(m)"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etFilterMax"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:text="100"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 默认位置 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:paddingTop="4dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingEnd="8dp">
+                <TextView
+                    android:id="@+id/tvDefaultLat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="默认纬度"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etDefaultLat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="39.90923"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="8dp">
+                <TextView
+                    android:id="@+id/tvDefaultLon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="默认经度"
+                    android:textSize="16sp"/>
+                <EditText
+                    android:id="@+id/etDefaultLon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal|numberSigned"
+                    android:text="116.397428"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 超时时间 -->
+        <TextView
+            android:id="@+id/tvTimeout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="超时时间(ms)"
+            android:textSize="16sp"
+            android:paddingTop="4dp"/>
+        <EditText
+            android:id="@+id/etTimeout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="8000"/>
+
+        <!-- 广播通知开关 -->
+        <TextView
+            android:id="@+id/tvBroadcast"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="启用广播通知"
+            android:textSize="16sp"
+            android:paddingTop="4dp"/>
+        <Switch
+            android:id="@+id/switchBroadcast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- 按钮 -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="开始定位"/>
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="停止定位"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <!-- 定位结果 -->
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="定位结果"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+
+    </LinearLayout>
+</ScrollView>

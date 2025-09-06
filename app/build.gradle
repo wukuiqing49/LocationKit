@@ -1,0 +1,128 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+}
+
+static def getTime() {
+    return new Date().format("yyyyMMdd_HHmmss")
+}
+
+// 签名配置
+def StoreFile = file("so.jks")  // 项目根目录或相对路径
+def StorePassword = "123456"
+def KeyAlias = "so"
+def KeyPassword = "123456"
+
+android {
+    namespace 'com.wkq.locationkit'
+    compileSdkVersion Integer.parseInt(libs.versions.compileSdk.get())
+    useLibrary 'org.apache.http.legacy'
+
+    defaultConfig {
+        applicationId "com.wkq.locationkit"
+        minSdk = Integer.parseInt(libs.versions.minSdk.get())
+        targetSdk = Integer.parseInt(libs.versions.targetSdk.get())
+
+        // 动态生成 versionName + versionCode
+        def baseVersion = libs.versions.versionName.get()
+        def buildNumber = System.getenv("BUILD_NUMBER") ?: "1"
+        versionName "${baseVersion}"
+
+        def parts = baseVersion.tokenize('.')
+        def major = parts.size() > 0 ? parts[0].toInteger() : 0
+        def minor = parts.size() > 1 ? parts[1].toInteger() : 0
+        def patch = parts.size() > 2 ? parts[2].toInteger() : 0
+        versionCode major * 1000 + minor * 100 + patch * 10 + buildNumber.toInteger()
+    }
+
+    signingConfigs {
+        jks {
+            storeFile StoreFile
+            storePassword StorePassword
+            keyAlias KeyAlias
+            keyPassword KeyPassword
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            signingConfig signingConfigs.jks
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            shrinkResources false
+            debuggable false
+            signingConfig signingConfigs.jks
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)  // JVM 版本 17
+    }
+    buildFeatures {
+        viewBinding true
+        buildConfig = true
+    }
+
+    // 自定义 APK 文件名
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (output.outputFileName.endsWith(".apk")) {
+                def apkName = rootProject.name
+                def versionName = android.defaultConfig.versionName
+                def timeStamp = getTime()
+                output.outputFileName = "${apkName}_${versionName}.apk"
+            }
+        }
+    }
+}
+
+// 拷贝 APK 到项目根目录 Apk 文件夹（Debug/Release 分类）
+afterEvaluate {
+    tasks.register("copyApks", Copy) {
+        // 允许重复文件，不报错
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+        android.applicationVariants.all { variant ->
+            variant.outputs.all { output ->
+                def buildType = variant.buildType.name
+                def targetDir = new File(rootProject.projectDir, "Apk/${buildType.capitalize()}")
+                if (!targetDir.exists()) targetDir.mkdirs()
+                from new File(output.outputFile.parent, output.outputFileName)
+                into targetDir
+            }
+        }
+    }
+
+    // assemble 完成后自动执行拷贝
+    tasks.matching { it.name.startsWith("assemble") }.all { assembleTask ->
+        assembleTask.finalizedBy("copyApks")
+    }
+}
+
+dependencies {
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.com.google.android.material
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.constraintlayout
+    implementation project(path: ':LibAAR:AAR_XPopup')
+
+    implementation 'com.blankj:utilcodex:1.31.0'
+    implementation project(':lib_base')
+    implementation project(':lib_location')
+    implementation project(':lib_address')
+//    implementation 'com.github.wukuiqing49:location:v1.0.9'
+//    implementation 'com.github.wukuiqing49:LocationDemo:v1.0.9'
+
+    // implementation project(path:':LibAAR:AAR_Address')
+}

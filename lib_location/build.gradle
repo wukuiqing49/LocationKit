@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+android {
+    namespace 'com.wkq.location'
+    compileSdkVersion Integer.parseInt(libs.versions.compileSdk.get())
+
+    defaultConfig {
+        minSdk = Integer.parseInt(libs.versions.minSdk.get())
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)  // JVM 版本 8
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+dependencies {
+    implementation "androidx.core:core-ktx:1.10.1"
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "com.google.android.material:material:1.9.0"
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "com.github.wukuiqing49"
+                artifactId = "location" // 模块名
+                version = "v1.1.0"
+
+                println("Gradle implementation: implementation '${groupId}:${artifactId}:${version}'")
+            }
+        }
+    }
+}
+

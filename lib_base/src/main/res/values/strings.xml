@@ -1,0 +1,22 @@
+<resources>
+
+    <string name="dialog_imagepicker_permission_confirm">我知道了</string>
+    <string name="toast_imagepicker_permission_denied">无法获取所需权限</string>
+    <string name="dialog_imagepicker_permission_nerver_ask_confirm">去设置</string>
+    <string name="dialog_imagepicker_permission_nerver_ask_cancel">取消</string>
+    <string name="dialog_imagepicker_permission_sdcard_message">应用程序需要获取外部存储卡的读写权限，否则无法获取照片数据!</string>
+    <string name="dialog_imagepicker_permission_sdcard_audio_message">应用程序需要获取外部存储卡的读写权限,麦克风权限以及手机状态权限，否则无法进行语音输入!</string>
+    <string name="dialog_imagepicker_permission_camera_message">应用程序需要获取拍照权限和外部存储卡写入权限以及麦克风权限，否则无法拍摄!</string>
+    <string name="dialog_imagepicker_permission_share_message">应用程序需要获取外部存储卡写入权限，否则无法正常使用分享功能!</string>
+    <string name="dialog_imagepicker_permission_sdcard_nerver_ask_message">应用程序无法获取外部存储卡的读写权限，导致无法获取照片数据，您可通过系统设置界面打开软件的读写权限</string>
+    <string name="dialog_imagepicker_permission_camera_nerver_ask_message">应用程序无法获取拍照所需权限，导致无法启用拍照功能，您可通过系统设置界面打开软件的拍照权限和外部存储卡读写权限</string>
+    <string name="msg_no_save_permission">无法读取本地文件,请开启读取存储权限</string>
+    <string name="CAMERA">需要打开系统相机权限</string>
+    <string name="msg_no_camera_permission">相机开启失败,请开启系统相机权限</string>
+    <string name="string_cancel">No</string>
+    <string name="string_sure">Yes</string>
+    <string name="s_upload_fail_tip">上传失败，请稍后再试</string>
+    <string name="s_upload_video_fail_retry">上传失败，可使用本地视频再次尝试</string>
+    <string name="s_net_work_error">网络异常，请稍后再试</string>
+
+</resources>

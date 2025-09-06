@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_common_dialog_bg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="30dp"
+        android:gravity="center"
+        android:text="title"
+        android:textColor="#242433"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="content"
+        android:textColor="#ff5c5c66" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/tv_left"
+            android:layout_width="137dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="17dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_cancel"
+            android:gravity="center"
+            android:lines="1"
+            android:text="@string/string_cancel"
+            android:textColor="#ff242433"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tv_right"
+            android:layout_width="137dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/shape_ok"
+            android:gravity="center"
+            android:lines="1"
+            android:text="@string/string_sure"
+            android:textColor="#ffffff"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

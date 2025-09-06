@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="color_white_5">#D0FFFFFF</color>
+    <color name="color_black_5">#D0000000</color>
+    <color name="color_empty_default">#ffe9edeb</color>
+    <color name="ps_color_grey">#393a3e</color>
+    <color name="color_2F314A">#2F314A</color>
+    <color name="color_white">#ffffff</color>
+    <color name="colorTextGray">#999999</color>
+    <color name="colorSelect">#000000</color>
+    <color name="colorDivider">#E5E5E5</color>
+    <color name="color_main_s">#FF00FF95</color>
+    <color name="color_main_d">#99FFFFFF</color>
+    <color name="color_white_60">#99FFFFFF</color>
+    <color name="color_default">#FF00FF95</color>
+    <color name="color_date_title">#66E9EDEB</color>
+    <color name="color_date_select_title">#FFE9EDEB</color>
+    <color name="color_hall_indicator_default">#66cbffe9</color>
+    <color name="color_hall_indicator_select">#FFFFFFFF</color>
+
+    <color name="color_d">#FF00FF95</color>
+    <color name="color_s">#FF00D0FF</color>
+
+</resources>
