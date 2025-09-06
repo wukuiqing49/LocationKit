@@ -119,8 +119,9 @@ dependencies {
 
     implementation 'com.blankj:utilcodex:1.31.0'
     implementation project(':lib_base')
-    implementation project(':lib_location')
-    implementation project(':lib_address')
-//    implementation 'com.github.wukuiqing49:LocationKit:v1.0.1'
+//    implementation project(':lib_location')
+//    implementation project(':lib_address')
+    implementation 'com.github.wukuiqing49:LocationAddress:v1.1.3'
+    implementation 'com.github.wukuiqing49:Location:v1.1.3'
 
 }
