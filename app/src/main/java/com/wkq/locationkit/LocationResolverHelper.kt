@@ -18,40 +18,69 @@ import java.util.Locale
  * @Author: wkq
  * @Date: 2025/09/02
  * @Desc: 生命周期安全的地理位置解析工具（Geocoder 优先，数据库兜底）
- * 支持：
- * 1. 单地址查询
- * 2. 附近位置列表查询
- * 3. Kotlin 协程和 Java 回调
+ *
+ * 功能：
+ * 1. 单地址解析：根据经纬度获取详细地址信息。
+ * 2. 附近位置列表解析：根据经纬度获取附近的地址信息列表。
+ * 3. 支持 Kotlin 协程和 Java 回调方式。
+ * 4. 生命周期安全：当传入 LifecycleOwner 时，Activity/Fragment 销毁时会自动取消后台任务。
+ *
+ * 使用说明：
+ * - 推荐在协程中使用 suspend 方法：getAddress / getNearbyAddresses
+ * - Java 或不在协程环境中使用异步方法：getAddressAsync / getNearbyAddressesAsync
+ * - 支持本地数据库兜底，确保在无网络或 Geocoder 不可用时仍能获取地址信息。
  */
-object LocationGeocoderHelper {
+object LocationResolverHelper {
 
     /**
-     * 返回的数据结构
+     * 解析结果数据结构
+     * @param address 完整详细地址，可能为空
+     * @param city 城市名称，例如 "北京市"
+     * @param province 省/州，例如 "北京市" 或 "广东省"
+     * @param country 国家名称，例如 "中国"
+     * @param latitude 纬度
+     * @param longitude 经度
      */
     data class LocationInfo(
-        val address: String?,  // 详细地址
-        val city: String?,     // 城市
-        val province: String?, // 省/州
-        val country: String?,  // 国家
+        val address: String?,
+        val city: String?,
+        val province: String?,
+        val country: String?,
         val latitude: Double,
         val longitude: Double
     )
 
     /**
-     * Java 回调接口
+     * Java 回调接口：单地址解析
      */
     interface AddressCallback {
+        /**
+         * @param result 解析后的 LocationInfo，如果解析失败则为 null
+         */
         fun onAddressResult(result: LocationInfo?)
     }
 
+    /**
+     * Java 回调接口：附近位置列表解析
+     */
     interface NearbyCallback {
+        /**
+         * @param results 解析后的地址列表，可能为空列表
+         */
         fun onNearbyResult(results: List<LocationInfo>)
     }
 
-    // ------------------- 单地址查询 -------------------
+    // ------------------- 单地址解析 -------------------
 
     /**
-     * Kotlin 挂起函数方式
+     * Kotlin 挂起函数方式获取单地址信息
+     *
+     * @param context 上下文对象
+     * @param latitude 纬度（-90 ~ 90）
+     * @param longitude 经度（-180 ~ 180）
+     * @param maxResults 最大返回条数，默认 1
+     * @param locale 本地化设置，默认系统语言
+     * @return LocationInfo 或 null（解析失败或坐标不合法）
      */
     suspend fun getAddress(
         context: Context,
@@ -64,7 +93,10 @@ object LocationGeocoderHelper {
     }
 
     /**
-     * Java / 生命周期安全方式
+     * Java / 生命周期安全方式获取单地址信息
+     *
+     * @param lifecycleOwner 可选，如果传入，任务在对应 Lifecycle 销毁时会自动取消
+     * @param callback 回调结果，会在主线程返回
      */
     @JvmStatic
     fun getAddressAsync(
@@ -77,6 +109,7 @@ object LocationGeocoderHelper {
         callback: AddressCallback
     ) {
         if (latitude !in -90.0..90.0 || longitude !in -180.0..180.0) {
+            // 坐标非法时立即返回 null
             callback.onAddressResult(null)
             return
         }
@@ -93,6 +126,7 @@ object LocationGeocoderHelper {
             }
         }
 
+        // 生命周期安全：Activity/Fragment 销毁时取消任务
         lifecycleOwner?.lifecycle?.addObserver(object : DefaultLifecycleObserver {
             override fun onDestroy(owner: LifecycleOwner) {
                 job.cancel()
@@ -100,6 +134,10 @@ object LocationGeocoderHelper {
         })
     }
 
+    /**
+     * 内部单地址解析实现
+     * 优先使用系统 Geocoder，不可用时使用 GeoDbHelper 数据库兜底
+     */
     private fun getAddressInternal(
         context: Context,
         latitude: Double,
@@ -107,7 +145,7 @@ object LocationGeocoderHelper {
         maxResults: Int,
         locale: Locale
     ): LocationInfo? {
-        // 1. 系统 Geocoder
+        // 系统 Geocoder
         try {
             if (Geocoder.isPresent()) {
                 val geocoder = Geocoder(context, locale)
@@ -121,7 +159,7 @@ object LocationGeocoderHelper {
             e.printStackTrace()
         }
 
-        // 2. GeoDbHelper 数据库兜底
+        // 数据库兜底
         return try {
             val geoDb = GeoDbHelper(context)
             val nearest = geoDb.getNearestPlaceResult(latitude, longitude)
@@ -130,7 +168,7 @@ object LocationGeocoderHelper {
                     address = listOfNotNull(it.name, it.admin2, it.admin1).joinToString(" "),
                     city = it.admin2,
                     province = it.admin1,
-                    country = "中国", // 国内 GeoNames 数据库默认中国
+                    country = "中国",
                     latitude = it.lat,
                     longitude = it.lon
                 )
@@ -141,10 +179,12 @@ object LocationGeocoderHelper {
         }
     }
 
+    /**
+     * 格式化系统 Geocoder 返回的 Address 为 LocationInfo
+     */
     private fun formatLocationInfo(address: Address?): LocationInfo? {
         if (address == null) return null
 
-        // 1. 遍历所有地址线，拼接完整地址（解决多地址线分散问题）
         val addressLines = mutableListOf<String>()
         for (i in 0..address.maxAddressLineIndex) {
             val line = address.getAddressLine(i)?.trim()
@@ -152,9 +192,9 @@ object LocationGeocoderHelper {
                 addressLines.add(line)
             }
         }
-        // 2. 若地址线为空，用“城市+省份+国家”兜底
+
         val fullAddress = if (addressLines.isNotEmpty()) {
-            addressLines.joinToString(" ") // 地址线间用空格分隔（可根据需求改“-”“，”）
+            addressLines.joinToString(" ")
         } else {
             listOfNotNull(address.locality, address.adminArea, address.countryName)
                 .joinToString(" ")
@@ -162,16 +202,23 @@ object LocationGeocoderHelper {
 
         return LocationInfo(
             address = fullAddress.takeIf { it.isNotBlank() },
-            city = address.locality, // 城市（如“北京市”“上海市”）
-            province = address.adminArea, // 省份/州（如“北京市”“广东省”）
-            country = address.countryName, // 国家（如“中国”“United States”）
+            city = address.locality,
+            province = address.adminArea,
+            country = address.countryName,
             latitude = address.latitude,
             longitude = address.longitude
         )
     }
 
-    // ------------------- 附近位置列表 -------------------
+    // ------------------- 附近位置列表解析 -------------------
 
+    /**
+     * Kotlin 挂起函数方式获取附近位置列表
+     *
+     * @param radiusKm 查询半径，单位公里
+     * @param maxResults 最大返回条数
+     * @return List<LocationInfo>，可能为空列表
+     */
     suspend fun getNearbyAddresses(
         context: Context,
         latitude: Double,
@@ -181,7 +228,7 @@ object LocationGeocoderHelper {
     ): List<LocationInfo> = withContext(Dispatchers.IO) {
         val results = mutableListOf<LocationInfo>()
 
-        // Geocoder 查询附近 POI
+        // 系统 Geocoder 查询
         try {
             if (Geocoder.isPresent()) {
                 val geocoder = Geocoder(context)
@@ -202,9 +249,7 @@ object LocationGeocoderHelper {
                 nearby.forEach { geo ->
                     results.add(
                         LocationInfo(
-                            address = listOfNotNull(geo.name, geo.admin2, geo.admin1).joinToString(
-                                " "
-                            ),
+                            address = listOfNotNull(geo.name, geo.admin2, geo.admin1).joinToString(" "),
                             city = geo.admin2,
                             province = geo.admin1,
                             country = "中国",
@@ -221,6 +266,9 @@ object LocationGeocoderHelper {
         results
     }
 
+    /**
+     * Java / 生命周期安全方式获取附近位置列表
+     */
     @JvmStatic
     fun getNearbyAddressesAsync(
         context: Context,

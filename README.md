@@ -1,5 +1,8 @@
 
-![效果图](picture/222.png)
+![效果图](picture/image_1.png)
+![效果图2](picture/image.png)
+
+
 # 定位
 
 项目中已使用暂未发现问题
@@ -28,6 +31,15 @@
 
 ## 4. 使用方式
 
+#### 网络库引用
+
+```
+//位置信息辅助类(GeoNames,补充,非必选)
+implementation 'com.github.wukuiqing49:LocationAddress:v1.1.3'
+
+// 获取经纬度信息
+ implementation 'com.github.wukuiqing49:Location:v1.1.3'
+```
 #### 4.1 动态申请权限
 
 ```

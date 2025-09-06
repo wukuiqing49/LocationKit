@@ -118,7 +118,7 @@ class LocationConfigTestActivity : BasicVbActivity<ActivityLocationConfigBinding
                 if (result.success && result.location != null) {
                     val loc = result.location!!
                     lifecycleScope.launch {
-                        val address = LocationGeocoderHelper.getAddress(this@LocationConfigTestActivity, loc.latitude, loc.longitude)
+                        val address = LocationResolverHelper.getAddress(this@LocationConfigTestActivity, loc.latitude, loc.longitude)
                         binding.tvResult.text = buildString {
                             append("✅ 定位成功\n")
                             append("类型: ${loc.provider}\n")

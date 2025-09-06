@@ -77,7 +77,7 @@ class LocationShowActivity : BasicVbActivity<ActivityLocationShowBinding>() {
                         "类型: ${loc.provider}\n纬度: ${loc.latitude}, 经度: ${loc.longitude}"
 
                     // 可选：解析地址
-                    val address = LocationGeocoderHelper.getAddress(
+                    val address = LocationResolverHelper.getAddress(
                         this@LocationShowActivity,
                         loc.latitude,
                         loc.longitude
