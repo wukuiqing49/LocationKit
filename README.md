@@ -1,7 +1,6 @@
 
-![效果图](../picture/image.png)
-![效果图](../picture/image_1.png)
-
+![效果图](picture/img.png)
+![效果图2](picture/img_1.png)
 
 # 定位
 
