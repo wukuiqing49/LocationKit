@@ -113,7 +113,7 @@ class LocationConfigTestActivity : BasicVbActivity<ActivityLocationConfigBinding
         }
 
         LocationKit.init(this, config)
-        LocationKit.startLocation(this) { result ->
+        LocationKit.startLocation() { result ->
             runOnUiThread {
                 if (result.success && result.location != null) {
                     val loc = result.location!!

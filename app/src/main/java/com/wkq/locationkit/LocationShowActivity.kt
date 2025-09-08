@@ -67,7 +67,7 @@ class LocationShowActivity : BasicVbActivity<ActivityLocationShowBinding>() {
         LocationKit.init(this, config)
 
         // 启动定位
-        LocationKit.startLocation(this) { result ->
+        LocationKit.startLocation() { result ->
             lifecycleScope.launch {
                 if (result.success && result.location != null) {
 

@@ -37,7 +37,7 @@
 implementation 'com.github.wukuiqing49:LocationAddress:v1.1.3'
 
 // 获取经纬度信息
- implementation 'com.github.wukuiqing49:Location:v1.1.3'
+ implementation 'com.github.wukuiqing49:Location:v1.1.4'
 ```
 #### 4.1 动态申请权限
 
