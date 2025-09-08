@@ -10,8 +10,8 @@ package com.wkq.location
  */
 class LocationConfig {
 
-    /** 定位超时时间（毫秒），默认 5000ms */
-    private var timeout: Long = 5000L
+    /** 定位超时时间（毫秒），默认 6000L */
+    private var timeout: Long = 6000L
 
     /** 连续两次定位的最小时间间隔（毫秒），默认 5000ms */
     private var minTimeMs: Long = 5000L
@@ -81,7 +81,16 @@ class LocationConfig {
     // ================= 获取方法 =================
 
     /** 获取定位超时时间 */
-    fun getTimeout(): Long = timeout
+
+    fun getTimeout(): Long {
+        // 优先返回用户自定义超时，如果没有则按模式默认值
+        return timeout ?: when (getLocationType()) {
+            LocationType.FAST -> 3000L
+            LocationType.SINGLE,
+            LocationType.FUSION -> timeout
+            else -> timeout
+        }
+    }
 
     /** 获取连续两次定位最小时间间隔 */
     fun getMinTimeMs(): Long = minTimeMs

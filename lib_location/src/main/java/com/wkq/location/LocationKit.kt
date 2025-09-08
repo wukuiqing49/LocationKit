@@ -60,9 +60,20 @@ object LocationKit : LocationListener {
      * 开始定位
      * 回调 listener 返回 LocationResult
      */
-    fun startLocation(context:Context,listener: (LocationResult) -> Unit) {
+    fun startLocation(listener: (LocationResult) -> Unit) {
         if (locationManager == null) {
-            listener(LocationResult(false, null, "请先初始化 LocationKit"))
+            listener(LocationResult(false, createDefaultLocation(), "LocationManager 初始化失败"))
+            return
+        }
+        if (!hasPermission()) {
+            listener(LocationResult(false, createDefaultLocation(), "缺少定位权限"))
+            return
+        }
+
+        // 2. 判断是否有可用 Provider
+        val providers = locationManager?.getProviders(true).orEmpty()
+        if (providers.isEmpty()) {
+            listener(LocationResult(false, createDefaultLocation(), "未启用定位服务，使用默认值"))
             return
         }
 
@@ -77,7 +88,7 @@ object LocationKit : LocationListener {
         // 根据定位类型请求不同 Provider
         when (type) {
             LocationType.FAST -> {
-                val last = getLastKnownLocation() ?: createDefaultLocation()
+                val last = getValidLastKnownLocation() ?: createDefaultLocation()
                 processLocation(last, force = true)   // 立即回调最后位置
                 requestAllProviders(minTimeMs, minDistanceM)
             }
@@ -98,8 +109,16 @@ object LocationKit : LocationListener {
         timeoutRunnable = Runnable {
             synchronized(lock) {
                 if (!singleLocationReceived) {
-                    val last = getLastKnownLocation() ?: createDefaultLocation()
-                    processLocation(last, force = true)
+                    val cached = getValidLastKnownLocation()
+                    if (cached != null) {
+                        processLocation(cached, force = true)
+                    } else {
+                        // 缓存无效，返回默认值
+                        processLocation(createDefaultLocation(), force = true)
+
+                        // ✅ 触发重试
+                        retryIfNoLocation(minTimeMs, minDistanceM)
+                    }
                 }
             }
         }
@@ -126,10 +145,40 @@ object LocationKit : LocationListener {
 
     /** 请求所有可用 Provider（GPS/网络/PASSIVE） */
     private fun requestAllProviders(minTimeMs: Long, minDistanceM: Float) {
-        listOf(
-            LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER,
-            LocationManager.PASSIVE_PROVIDER
-        ).forEach { provider -> requestProvider(provider, minTimeMs, minDistanceM) }
+        // 获取可用 Provider
+        val providers = locationManager?.getProviders(true).orEmpty()
+        val finalProviders = if (providers.isEmpty()) {
+            // ROM 返回空时，强制使用 NETWORK + PASSIVE
+            listOf(LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)
+        } else providers
+
+        finalProviders.forEach { provider -> requestProvider(provider, minTimeMs, minDistanceM) }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getValidLastKnownLocation(): Location? {
+        if (!hasPermission()) return null
+        val now = System.currentTimeMillis()
+        var best: Location? = null
+        locationManager?.getProviders(true)?.forEach { provider ->
+            val loc = locationManager?.getLastKnownLocation(provider) ?: return@forEach
+            if (now - loc.time > 60_000) return@forEach
+            if (best == null || loc.accuracy < best.accuracy) best = loc
+        }
+        return best
+    }
+
+    private var retryCount = 0
+    private val maxRetry = 2
+
+    private fun retryIfNoLocation(minTimeMs: Long, minDistanceM: Float) {
+        if (retryCount >= maxRetry) return
+        retryCount++
+        handler.postDelayed({
+            if (!singleLocationReceived) {
+                requestAllProviders(minTimeMs, minDistanceM)
+            }
+        }, 2000)
     }
 
     // -------------------- 权限检查 --------------------
@@ -243,7 +292,7 @@ object LocationKit : LocationListener {
     }
 
     override fun onProviderDisabled(provider: String) {
-        callback?.invoke(LocationResult(false, null, "定位权限被禁用"))
+        callback?.invoke(LocationResult(false, createDefaultLocation(),"$provider 被禁用"))
     }
 }
 
