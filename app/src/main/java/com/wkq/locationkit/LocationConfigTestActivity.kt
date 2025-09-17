@@ -15,10 +15,10 @@ import androidx.lifecycle.lifecycleScope
 import com.wkq.base.activity.BasicVbActivity
 import com.wkq.base.util.showToast
 import com.wkq.locationkit.databinding.ActivityLocationConfigBinding
-import com.wkq.location.LocationBroadcast
-import com.wkq.location.LocationConfig
+import com.wkq.location.address.LocationBroadcast
+import com.wkq.location.address.LocationConfig
 import com.wkq.location.LocationKit
-import com.wkq.location.LocationType
+import com.wkq.location.address.LocationType
 import kotlinx.coroutines.launch
 import kotlin.apply
 import kotlin.collections.all

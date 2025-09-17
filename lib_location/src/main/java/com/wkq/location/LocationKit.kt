@@ -12,6 +12,10 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import com.wkq.location.address.LocationBroadcast
+import com.wkq.location.address.LocationConfig
+import com.wkq.location.address.LocationResult
+import com.wkq.location.address.LocationType
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -292,7 +296,7 @@ object LocationKit : LocationListener {
     }
 
     override fun onProviderDisabled(provider: String) {
-        callback?.invoke(LocationResult(false, createDefaultLocation(),"$provider 被禁用"))
+        callback?.invoke(LocationResult(false, createDefaultLocation(), "$provider 被禁用"))
     }
 }
 

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
-        android:layout_marginTop="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="50dp"
         android:text="当前经纬度位置:" />
+
     <TextView
         android:id="@+id/tv_location"
         android:layout_width="wrap_content"
@@ -26,11 +27,11 @@
         android:text="" />
 
 
-
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
@@ -38,44 +39,67 @@
             android:layout_margin="10dp"
             android:text="手机品牌:" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_os"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="10dp"-->
-<!--            android:text="手机系统:" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_os"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_margin="10dp"-->
+        <!--            android:text="手机系统:" />-->
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_version"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="10dp"-->
-<!--            android:text="手机版本:" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_version"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_margin="10dp"-->
+        <!--            android:text="手机版本:" />-->
 
     </LinearLayout>
 
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <Button
-
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bt_location"
-        android:layout_margin="10dp"
-        android:text="定位"/>
+        android:orientation="horizontal">
+
+        <Button
+
+            android:id="@+id/bt_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="定位" />
 
 
-    <Button
+        <Button
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bt_location_process"
-        android:layout_margin="10dp"
-        android:text="定位调试"/>
-</LinearLayout>
+            android:id="@+id/bt_location_process"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="定位调试" />
+
+        <Button
+
+            android:id="@+id/bt_sensor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="传感器" />
+
+        <Button
+
+            android:id="@+id/bt_draw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="绘制路径" />
+    </LinearLayout>
+
+    <com.wkq.location.sensor.TrackMapView
+        android:id="@+id/trackView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        />
 
 </LinearLayout>

@@ -1,5 +1,4 @@
-
-package com.wkq.location
+package com.wkq.location.address
 
 
 /**

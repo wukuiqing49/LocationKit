@@ -1,4 +1,4 @@
-package com.wkq.location
+package com.wkq.location.address
 
 /**
  * 定位类型枚举
