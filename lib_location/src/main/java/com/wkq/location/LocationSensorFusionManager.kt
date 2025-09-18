@@ -105,43 +105,69 @@ class LocationSensorFusionManager(private val context: Context) {
     }
 
     /** 触发回调，融合 GPS + PDR + Pressure + 速度 */
+    private var firstPoint: SensorPointInfo? = null
+    private val loopCorrectionThreshold = 5f   // 米，距离起点小于该值触发闭环校正
+    private val loopCorrectionWindow = 10      // 最近10个点进行微调
+
     private fun triggerCallback(point: SensorPointInfo) {
         val now = System.currentTimeMillis()
         if (now - lastCallbackTime < callbackInterval) return
         val dt = (now - lastCallbackTime) / 1000f
 
-        // 融合 GPS + PDR
+        // ---------------- 动态 GPS 权重 ----------------
         val gpsWeight = lastGpsLocation?.let {
-            val w = ((50 - it.accuracy) / 50f).coerceIn(0f, 1f)
-            if (it.accuracy > 25f) 0f else w
+            if (it.accuracy > 50f) 0f else ((50 - it.accuracy) / 50f).coerceIn(0.1f, 0.7f)
         } ?: 0f
 
-        val finalLat = lastGpsLocation?.let { gpsWeight * it.latitude + (1 - gpsWeight) * point.lat } ?: point.lat
-        val finalLng = lastGpsLocation?.let { gpsWeight * it.longitude + (1 - gpsWeight) * point.lng } ?: point.lng
-        val finalAlt = lastGpsLocation?.let { gpsWeight * it.altitude.toFloat() + (1 - gpsWeight) * point.altitude } ?: point.altitude
+        // 融合 GPS + PDR
+        val fusedLat = lastGpsLocation?.let { gpsWeight * it.latitude + (1 - gpsWeight) * point.lat } ?: point.lat
+        val fusedLng = lastGpsLocation?.let { gpsWeight * it.longitude + (1 - gpsWeight) * point.lng } ?: point.lng
+        val fusedAlt = lastGpsLocation?.let { gpsWeight * it.altitude.toFloat() + (1 - gpsWeight) * point.altitude } ?: point.altitude
 
-        // 计算速度和微小移动过滤
+        // ---------------- 速度计算 + 微动过滤 ----------------
         var speed = 0f
         lastPoint?.let { last ->
-            val distance = distanceBetween(last.lat, last.lng, finalLat, finalLng)
+            val distance = distanceBetween(last.lat, last.lng, fusedLat, fusedLng)
             speed = if (dt > 0) (distance / dt).toFloat() else 0f
             val gpsHalf = (lastGpsLocation?.accuracy ?: 5f) / 2
-            val minMoveDistance = if (gpsHalf > 1.0f) gpsHalf else 1.0f
-            val distanceF = distance.toFloat()
-            if (distanceF < minMoveDistance && speed < 0.1f) return
+            val minMoveDistance = max(gpsHalf, 0.5f)
+            if (distance < minMoveDistance && speed < 0.1f) return
         }
 
-        // 平滑融合（低通滤波）
-        val alpha = 0.3f
-        val fusedLat = alpha * finalLat + (1 - alpha) * (lastPoint?.lat ?: finalLat)
-        val fusedLng = alpha * finalLng + (1 - alpha) * (lastPoint?.lng ?: finalLng)
-        val fusedAlt = alpha * finalAlt + (1 - alpha) * (lastPoint?.altitude ?: finalAlt)
+        // ---------------- 动态低通滤波 ----------------
+        val alpha = gpsWeight.coerceIn(0.3f, 0.7f)
+        val finalLat = alpha * fusedLat + (1 - alpha) * (lastPoint?.lat ?: fusedLat)
+        val finalLng = alpha * fusedLng + (1 - alpha) * (lastPoint?.lng ?: fusedLng)
+        val finalAlt = alpha * fusedAlt + (1 - alpha) * (lastPoint?.altitude ?: fusedAlt)
 
-        val fusedPoint = SensorPointInfo(fusedLat, fusedLng, fusedAlt, point.heading, speed)
+        val fusedPoint = SensorPointInfo(finalLat, finalLng, finalAlt, point.heading, speed)
         lastCallbackTime = now
         lastPoint = fusedPoint
 
+        // ---------------- 设置起点 ----------------
+        if (firstPoint == null) firstPoint = fusedPoint
+
         trackPoints.add(fusedPoint)
+
+        // ---------------- 闭环校正 ----------------
+        firstPoint?.let { start ->
+            val distToStart = distanceBetween(start.lat, start.lng, fusedPoint.lat, fusedPoint.lng)
+            if (distToStart < loopCorrectionThreshold && trackPoints.size > loopCorrectionWindow) {
+                val correctionPoints = trackPoints.takeLast(loopCorrectionWindow)
+                val deltaLat = (start.lat - fusedPoint.lat) / loopCorrectionWindow
+                val deltaLng = (start.lng - fusedPoint.lng) / loopCorrectionWindow
+                for (i in correctionPoints.indices) {
+                    val idx = trackPoints.size - loopCorrectionWindow + i
+                    val p = trackPoints[idx]
+                    trackPoints[idx] = p.copy(
+                        lat = p.lat + deltaLat * (i + 1),
+                        lng = p.lng + deltaLng * (i + 1)
+                    )
+                }
+            }
+        }
+
+        // 回调
         callback?.onLocationUpdate(fusedPoint)
     }
 
