@@ -115,7 +115,8 @@ dependencies {
     implementation libs.com.google.android.material
     implementation libs.androidx.recyclerview
     implementation libs.androidx.constraintlayout
-    implementation project(path: ':LibAAR:AAR_XPopup')
+    implementation 'com.github.wukuiqing49:XPopup:2.10.3'
+//    implementation project(path: ':LibAAR:AAR_XPopup')
 
     implementation 'com.blankj:utilcodex:1.31.0'
     implementation project(':lib_base')
